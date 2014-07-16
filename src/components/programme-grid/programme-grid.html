@@ -1,0 +1,18 @@
+<table class="tv-listing">
+    <tbody data-bind="foreach: myChannels">
+        <tr>
+            <td>
+                <img data-bind="style: { background: background, height: height, width: width }" />
+            </td>
+            <td data-bind="foreach: programmes">
+                <div class="programme" data-bind="style: { width: width+'px' }">
+                    <h2 data-bind="text: title"></h2>
+                    <p>
+                        <span data-bind="text: startTime"></span> -
+                        <span data-bind="text: endTime"></span>
+                    </p>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
