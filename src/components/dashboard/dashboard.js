@@ -36,10 +36,7 @@ define(['knockout', 'text!./dashboard.html', 'zepto'], function(ko, templateMark
                 for (i=0; i<self.model.graphs.length; i++){
                     var value = self.model.graphs[i];
                     value.dataRoot = self.model.dataRoot;
-                    var graph = self.graphs().find(find(value));
-                    if (!graph) {
-                        self.graphs.push(value);
-                    }
+                    self.graphs.push(value);
                 }
             });
         };
