@@ -17,29 +17,31 @@ define(['knockout', 'text!./dashboard.html', 'zepto'], function(ko, templateMark
         self.refresh = function(){
             var i;
 
-            // TODO: fetch this via CORS
-            // Currently not working:
-            // http://meta.wikimedia.org/w/api.php?
-            //      action=query&
-            //      prop=revisions&
-            //      rvprop=content&
-            //      format=json&
-            //      titles=Dashboard:test
-            // var url = self.url();
-            // if (!url) { return; }
-
-            // TODO: automatically map the model
-            self.model = tmp;
-            self.name(self.model.name);
-            self.description(self.model.description);
-            for (i=0; i<self.model.graphs.length; i++){
-                var value = self.model.graphs[i];
-                value.dataRoot = self.model.dataRoot;
-                var graph = self.graphs().find(find(value));
-                if (!graph) {
-                    self.graphs.push(value);
-                }
+            var url = self.url();
+            if (!url) {
+                // If no URL, default to an Example URL:
+                url = 'http://meta.wikimedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=Dashboard:test';
             }
+            url = url + '&origin=' + location.origin;
+
+            $.get(url).done(function(mw){
+                // FOR DEBUG WITHOUT MEDIAWIKI: self.model = staticModel;
+                self.model = JSON.parse(
+                    mw.query.pages[Object.keys(mw.query.pages)[0]].revisions[0]['*']
+                );
+
+                // TODO: automatically map the model
+                self.name(self.model.name);
+                self.description(self.model.description);
+                for (i=0; i<self.model.graphs.length; i++){
+                    var value = self.model.graphs[i];
+                    value.dataRoot = self.model.dataRoot;
+                    var graph = self.graphs().find(find(value));
+                    if (!graph) {
+                        self.graphs.push(value);
+                    }
+                }
+            });
         };
         self.url.subscribe(self.refresh);
         self.refresh();
@@ -48,7 +50,7 @@ define(['knockout', 'text!./dashboard.html', 'zepto'], function(ko, templateMark
     return { viewModel: Dashboard, template: templateMarkup };
 });
 
-var tmp = {
+var staticModel = {
     name: 'Editor Engagement Vital Signs',
     description: 'This is just a test for a potential dashboarding solution',
     layout: 'metrics-by-project',
