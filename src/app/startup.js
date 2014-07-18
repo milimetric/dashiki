@@ -9,11 +9,11 @@ define(['jquery', 'knockout', './router', 'bootstrap', 'knockout-projections', '
     template: { require: 'text!components/about/about.html' }
   });
 
-  ko.components.register('programme-grid', { require: 'components/programme-grid/programme-grid' });
-
   ko.components.register('error', { require: 'components/error/error' });
 
   ko.components.register('vega-graph', { require: 'components/vega-graph/vega-graph' });
+
+  ko.components.register('dashboard', { require: 'components/dashboard/dashboard' });
 
   // [Scaffolded component registrations will be inserted here. To retain this feature, don't remove this comment.]
 

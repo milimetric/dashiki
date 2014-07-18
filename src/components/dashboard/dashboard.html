@@ -1,0 +1,7 @@
+<div class="dashboard">
+    <button data-bind="click: refresh">(refresh dashboard)</button>
+
+    <!-- ko foreach: graphs -->
+    <vega-graph params="graph: $data"></vega-graph>
+    <!-- /ko -->
+</div>

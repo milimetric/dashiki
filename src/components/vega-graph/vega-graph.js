@@ -1,68 +1,94 @@
-define(['knockout', 'text!./vega-graph.html'], function(ko, templateMarkup) {
-
-    var unwrap = ko.utils.unwrapObservable;
-
+define(['knockout', 'text!./vega-graph.html', 'd3', 'zepto'], function(ko, templateMarkup, d3) {
     function VegaGraph(params) {
         var self = this;
-        self.dataInput = ko.observable(unwrap(params.data));
-        self.data = ko.computed({
-            read: function(){
-                return JSON.stringify(unwrap(this.dataInput()), null, 4);
-            },
-            write: function(value) {
-                this.dataInput(JSON.parse(value));
-            },
-            owner: self
-        });
+        var i;
+        var g = params.graph;
 
+        self.addDataset = function(project, aggregate, submetric) {
+            return function(rawData) {
+                var normalized = [],
+                    keys = Object.keys(rawData),
+                    i;
+
+                keys.splice(keys.indexOf('parameters'), 1);
+                for (i=0; i<keys.length; i++) {
+                    normalized.push({
+                        date: new Date(keys[i]),
+                        project: project,
+                        submetric: rawData[keys[i]][aggregate][submetric]
+                    });
+                }
+                self.datasets.push(normalized.sort(function(a, b){
+                    return a.date.getTime() - b.date.getTime();
+                }));
+            };
+        };
+        self.datasets = ko.observableArray();
+        self.name = g.metric + ' for ' + g.projects.join(', ');
+        for (i=0; i<g.projects.length; i++){
+            $.get(g.dataRoot + g.metric + '/' + g.projects[i] + '.json')
+                .done(self.addDataset(g.projects[i], g.aggregate || 'Sum', g.submetric));
+        }
         self.definition = ko.computed(function(){
-            var data = JSON.parse(this.data());
+            var datasets = this.datasets();
             return {
-                "width": 400,
+                "width": 500,
                 "height": 200,
-                "padding": {"top": 10, "left": 40, "bottom": 30, "right": 10},
-                "data": data,
+                "data": [
+                    {
+                        "name": "projects",
+                        "format": {"parse": {"date":"date"}},
+                        "values": d3.merge(datasets)
+                    }
+                ],
                 "scales": [
                     {
                         "name": "x",
-                        "type": "ordinal",
+                        "type": "time",
                         "range": "width",
-                        "domain": {"data": data[0].name, "field": "data.x"}
+                        "domain": {"data": "projects", "field": "data.date"}
                     },
                     {
                         "name": "y",
+                        "type": "linear",
                         "range": "height",
                         "nice": true,
-                        "domain": {"data": data[0].name, "field": "data.y"}
+                        "domain": {"data": "projects", "field": "data.submetric"}
+                    },
+                    {
+                        "name": "color", "type": "ordinal", "range": "category10"
                     }
                 ],
                 "axes": [
-                    {"type": "x", "scale": "x"},
+                    {"type": "x", "scale": "x", "tickSizeEnd": 0},
                     {"type": "y", "scale": "y"}
                 ],
                 "marks": [
                     {
-                        "type": "rect",
-                        "from": {"data": data[0].name},
-                        "properties": {
-                            "enter": {
-                                "x": {"scale": "x", "field": "data.x"},
-                                "width": {"scale": "x", "band": true, "offset": -1},
-                                "y": {"scale": "y", "field": "data.y"},
-                                "y2": {"scale": "y", "value": 0}
-                            },
-                            "update": {
-                                "fill": {"value": "steelblue"}
-                            },
-                            "hover": {
-                                "fill": {"value": "red"}
+                        "type": "group",
+                        "from": {
+                            "data": "projects",
+                            "transform": [{"type": "facet", "keys": ["data.project"]}]
+                        },
+                        "marks": [
+                            {
+                                "type": "line",
+                                "properties": {
+                                    "enter": {
+                                        "x": {"scale": "x", "field": "data.date"},
+                                        "y": {"scale": "y", "field": "data.submetric"},
+                                        "stroke": {"scale": "color", "field": "data.project"},
+                                        "strokeWidth": {"value": 1}
+                                    }
+                                }
                             }
-                        }
+                        ]
                     }
                 ]
             };
         }, self);
     }
+
 
     VegaGraph.prototype.dispose = function() { };
 
