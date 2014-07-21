@@ -19,8 +19,8 @@ define(['knockout', 'text!./dashboard.html', 'zepto'], function(ko, templateMark
 
             var url = self.url();
             if (!url) {
-                // If no URL, default to an Example URL:
-                url = 'http://meta.wikimedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=Dashboard:test';
+                console.error('must type in a URL or leave the default alone');
+                return;
             }
             url = url + '&origin=' + location.origin;
 

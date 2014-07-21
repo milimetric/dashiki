@@ -11,12 +11,23 @@ define(['knockout', 'text!./vega-graph.html', 'd3', 'zepto'], function(ko, templ
                     i;
 
                 keys.splice(keys.indexOf('parameters'), 1);
-                for (i=0; i<keys.length; i++) {
-                    normalized.push({
-                        date: new Date(keys[i]),
-                        project: project,
-                        submetric: rawData[keys[i]][aggregate][submetric]
-                    });
+                if (keys.indexOf('result') >= 0){
+                    keys = Object.keys(rawData.result[aggregate][submetric]);
+                    for (i=0; i<keys.length; i++) {
+                        normalized.push({
+                            date: new Date(keys[i]),
+                            project: project,
+                            submetric: rawData.result[aggregate][submetric][keys[i]]
+                        });
+                    }
+                } else {
+                    for (i=0; i<keys.length; i++) {
+                        normalized.push({
+                            date: new Date(keys[i]),
+                            project: project,
+                            submetric: rawData[keys[i]][aggregate][submetric]
+                        });
+                    }
                 }
                 self.datasets.push(normalized.sort(function(a, b){
                     return a.date.getTime() - b.date.getTime();
