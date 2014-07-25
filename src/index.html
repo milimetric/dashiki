@@ -14,7 +14,8 @@
     <!-- endbuild -->
   </head>
   <body>
-    <nav-bar params="route: route"></nav-bar>
-    <div id="page" class="container" data-bind="component: { name: route().page, params: route }"></div>
+    <!--<nav-bar params="route: route"></nav-bar>-->
+    <!--<div id="page" class="container" data-bind="component: { name: route().page, params: route }"></div>-->
+    <wikimetrics-dashboard params="baseURL: 'https://metrics-staging.wmflabs.org/static/public/datafiles/'"></wikimetrics-dashboard>
   </body>
 </html>
