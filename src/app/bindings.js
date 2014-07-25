@@ -16,7 +16,8 @@ define(['knockout', 'vega', 'd3'], function(ko, vega, d3) {
             var datasets;
             datasets = ko.utils.unwrapObservable(valueAccessor());
             if (datasets !== null) {
-                if(element.view) {
+                // NOTE: if datasets is emptied, it's faster for some reason to just create a new graph
+                if(element.view && datasets.length) {
                     var parsed = vega.parse.data(vegaData(datasets)).load;
                     element.view.data(parsed).update({ duration: 300 });
                 } else {

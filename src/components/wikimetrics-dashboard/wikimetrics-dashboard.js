@@ -45,7 +45,8 @@ define(['knockout', 'text!./wikimetrics-dashboard.html', 'zepto'], function(ko, 
                             RollingActiveEditor: 'rolling_active_editor'
                         };
                         metric.projects.push({
-                            name: last(projectLink),
+                            project: last(projectLink),
+                            metricName: last(metricLink),
                             dataURL: params.baseURL + metricLink + projectLink,
                             submetric: submetrics[last(metricLink)],
                             dataType: 'wikimetrics',

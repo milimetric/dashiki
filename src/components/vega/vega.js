@@ -6,26 +6,42 @@ define(['knockout', 'moment', 'text!./vega.html', 'zepto'], function(ko, moment,
 
         var self = this;
         var dataCache = {};
+        function key(datum){
+            return datum.metricName + datum.project;
+        }
 
         self.selectedProjects.subscribe(function(newProjects){
+            if (!newProjects || !newProjects.length) {
+                this.datasets([]);
+                return;
+            }
             var self = this;
             var currentProjects = self.datasets();
             var currentDict = {};
             var newDict = {};
+            var keep = 0;
+            var maxLoop = 10000;
             var i;
 
             for (i=0; i<currentProjects.length; i++){
-                currentDict[currentProjects[i][0].project] = currentProjects[i];
+                currentDict[key(currentProjects[i][0])] = currentProjects[i];
             }
             for (i=0; i<newProjects.length; i++){
-                newDict[newProjects[i].name] = newProjects[i];
+                newDict[key(newProjects[i])] = newProjects[i];
             }
 
-            for (i=0; i<currentProjects.length; i++){
-                var c = currentProjects[i][0].project;
+            while (keep<currentProjects.length && maxLoop > 0){
+                var c = key(currentProjects[keep][0]);
                 if (!(newDict.hasOwnProperty(c))){
                     self.datasets.remove(currentDict[c]);
+                } else {
+                    keep++;
                 }
+                // NOTE: this kind of thing is what's tricky about knockout.
+                // The logic here will be cleaned up once we stop passing random hardcoded structures around
+                // and move to object-oriented cleanliness.  But knockout does keep you honest because I believe
+                // this could turn into an infinite loop if some of the dependencies fire in a weird order.
+                maxLoop--;
             }
 
             // Definitely replace this with proper cache headers on the data
@@ -38,8 +54,8 @@ define(['knockout', 'moment', 'text!./vega.html', 'zepto'], function(ko, moment,
 
             for (i=0; i<newProjects.length; i++){
                 var p = newProjects[i];
-                if (!(currentDict.hasOwnProperty(p.name))){
-                    var add = self.addDataset(p.name, p.aggregate || 'Sum', p.submetric);
+                if (!(currentDict.hasOwnProperty(key(p)))){
+                    var add = self.addDataset(p.project, p.aggregate || 'Sum', p.submetric);
                     if (!(dataCache.hasOwnProperty(p.dataURL))){
                         $.get(p.dataURL).done(addAndCache(add));
                     } else {
@@ -49,11 +65,12 @@ define(['knockout', 'moment', 'text!./vega.html', 'zepto'], function(ko, moment,
             }
         }, self);
 
-        self.datasets = ko.observableArray();
+        self.datasets = ko.observableArray().extend({ rateLimit: 20, method: 'notifyWhenChangesStop' });
         self.addDataset = function(project, aggregate, submetric) {
             return function(rawData) {
                 var normalized = [],
                     keys = Object.keys(rawData),
+                    metricName = self.selectedMetric().name,
                     i;
 
                 keys.splice(keys.indexOf('parameters'), 1);
@@ -63,6 +80,7 @@ define(['knockout', 'moment', 'text!./vega.html', 'zepto'], function(ko, moment,
                         normalized.push({
                             date: moment(keys[i]).toDate(),
                             project: project,
+                            metricName: metricName,
                             submetric: rawData.result[aggregate][submetric][keys[i]]
                         });
                     }
@@ -71,6 +89,7 @@ define(['knockout', 'moment', 'text!./vega.html', 'zepto'], function(ko, moment,
                         normalized.push({
                             date: moment(keys[i]).toDate(),
                             project: project,
+                            metricName: metricName,
                             submetric: rawData[keys[i]][aggregate][submetric]
                         });
                     }
