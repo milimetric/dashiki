@@ -1,7 +1,11 @@
-<wikimetrics-data-browser
-    params="projectsByMetric: projectsByMetric,
-            selectedMetric: selectedMetric,
-            metricProjects: metricProjects,
-           "
-></wikimetrics-data-browser>
-<vega params="selectedProjects: selectedProjects"></vega>
+<section class="col-md-2">
+    <wikimetrics-data-browser
+        params="projectsByMetric: projectsByMetric,
+                selectedMetric: selectedMetric,
+                metricProjects: metricProjects,
+               "
+    ></wikimetrics-data-browser>
+</section>
+<section class="col-md-10">
+    <vega params="selectedProjects: selectedProjects"></vega>
+</section>

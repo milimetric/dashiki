@@ -13,7 +13,8 @@ var require = {
         "zepto":                "bower_modules/zepto/zepto",
         "topojson":             "bower_modules/topojson/topojson",
         "d3":                   "bower_modules/d3/d3",
-        "vega":                 "bower_modules/vega/vega"
+        "vega":                 "bower_modules/vega/vega",
+        "moment":               "bower_modules/moment/moment"
     },
     shim: {
         "bootstrap": { deps: ["jquery"] }

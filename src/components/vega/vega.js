@@ -1,4 +1,4 @@
-define(['knockout', 'text!./vega.html', 'zepto'], function(ko, templateMarkup) {
+define(['knockout', 'moment', 'text!./vega.html', 'zepto'], function(ko, moment, templateMarkup) {
 
     function Vega(params) {
         // copies all the params to self
@@ -61,7 +61,7 @@ define(['knockout', 'text!./vega.html', 'zepto'], function(ko, templateMarkup) {
                     keys = Object.keys(rawData.result[aggregate][submetric]);
                     for (i=0; i<keys.length; i++) {
                         normalized.push({
-                            date: new Date(keys[i]),
+                            date: moment(keys[i]).toDate(),
                             project: project,
                             submetric: rawData.result[aggregate][submetric][keys[i]]
                         });
@@ -69,7 +69,7 @@ define(['knockout', 'text!./vega.html', 'zepto'], function(ko, templateMarkup) {
                 } else {
                     for (i=0; i<keys.length; i++) {
                         normalized.push({
-                            date: new Date(keys[i]),
+                            date: moment(keys[i]).toDate(),
                             project: project,
                             submetric: rawData[keys[i]][aggregate][submetric]
                         });

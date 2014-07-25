@@ -19,7 +19,6 @@ define(['knockout', 'vega', 'd3'], function(ko, vega, d3) {
                 if(element.view) {
                     var parsed = vega.parse.data(vegaData(datasets)).load;
                     element.view.data(parsed).update({ duration: 300 });
-                    console.log(parsed);
                 } else {
                     vega.parse.spec(vegaDefinition(datasets), function(graph){
                         element.view = graph({el:element}).update();
@@ -78,12 +77,12 @@ define(['knockout', 'vega', 'd3'], function(ko, vega, d3) {
                             "type": "line",
                             "properties": {
                                 "enter": {
-                                    "stroke": {"scale": "color", "field": "data.project"},
                                     "strokeWidth": {"value": 2}
                                 },
                                 "update": {
                                     "x": {"scale": "x", "field": "data.date"},
-                                    "y": {"scale": "y", "field": "data.submetric"}
+                                    "y": {"scale": "y", "field": "data.submetric"},
+                                    "stroke": {"scale": "color", "field": "data.project"}
                                 }
                             }
                         },
