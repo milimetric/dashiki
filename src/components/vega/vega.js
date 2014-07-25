@@ -5,6 +5,7 @@ define(['knockout', 'text!./vega.html', 'zepto'], function(ko, templateMarkup) {
         $.extend(this, params);
 
         var self = this;
+        var dataCache = {};
 
         self.selectedProjects.subscribe(function(newProjects){
             var self = this;
@@ -27,11 +28,23 @@ define(['knockout', 'text!./vega.html', 'zepto'], function(ko, templateMarkup) {
                 }
             }
 
+            // Definitely replace this with proper cache headers on the data
+            function addAndCache(add) {
+                return function(rawData) {
+                    add.call(self, rawData);
+                    dataCache[p.dataURL] = rawData;
+                };
+            }
+
             for (i=0; i<newProjects.length; i++){
                 var p = newProjects[i];
                 if (!(currentDict.hasOwnProperty(p.name))){
-                    $.get(p.dataURL)
-                        .done(self.addDataset(p.name, p.aggregate || 'Sum', p.submetric));
+                    var add = self.addDataset(p.name, p.aggregate || 'Sum', p.submetric);
+                    if (!(dataCache.hasOwnProperty(p.dataURL))){
+                        $.get(p.dataURL).done(addAndCache(add));
+                    } else {
+                        add.call(self, dataCache[p.dataURL]);
+                    }
                 }
             }
         }, self);
