@@ -3,9 +3,12 @@
 </div>
 <div>
     <ul data-bind="foreach: metricProjects">
-        <li><label>
-            <input type="checkbox" data-bind="checked: selected"/>
-            <span data-bind="text: name"></span>
-        </label></li>
+        <li>
+            <label>
+                <input type="checkbox" data-bind="checked: selected"/>
+                <span data-bind="text: name"></span>
+            </label>
+            <a data-bind="attr: {href: dataURL}" target="_blank">(source data)</a>
+        </li>
     </ul>
 </div>
