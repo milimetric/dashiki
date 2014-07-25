@@ -45,10 +45,10 @@ define(['knockout', 'moment', 'text!./vega.html', 'zepto'], function(ko, moment,
             }
 
             // Definitely replace this with proper cache headers on the data
-            function addAndCache(add) {
+            function addAndCache(key, add) {
                 return function(rawData) {
                     add.call(self, rawData);
-                    dataCache[p.dataURL] = rawData;
+                    dataCache[key] = rawData;
                 };
             }
 
@@ -57,7 +57,7 @@ define(['knockout', 'moment', 'text!./vega.html', 'zepto'], function(ko, moment,
                 if (!(currentDict.hasOwnProperty(key(p)))){
                     var add = self.addDataset(p.project, p.aggregate || 'Sum', p.submetric);
                     if (!(dataCache.hasOwnProperty(p.dataURL))){
-                        $.get(p.dataURL).done(addAndCache(add));
+                        $.get(p.dataURL).done(addAndCache(p.dataURL, add));
                     } else {
                         add.call(self, dataCache[p.dataURL]);
                     }
