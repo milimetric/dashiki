@@ -42,6 +42,7 @@ define(['knockout', 'vega', 'd3'], function(ko, vega, d3) {
         return {
             "width": 900,
             "height": 400,
+            "padding": { top: 20, right: 100, bottom: 50, left: 100 },
             "data": vegaData(datasets),
             "scales": [
                 {
@@ -83,6 +84,23 @@ define(['knockout', 'vega', 'd3'], function(ko, vega, d3) {
                                 "update": {
                                     "x": {"scale": "x", "field": "data.date"},
                                     "y": {"scale": "y", "field": "data.submetric"}
+                                }
+                            }
+                        },
+                        {
+                            "type": "text",
+                            "from": {
+                                "transform": [{"type": "filter", "test": "index==data.length-1"}]
+                            },
+                            "properties": {
+                                "enter": {
+                                    "baseline": {"value": "middle"}
+                                },
+                                "update": {
+                                    "x": {"scale": "x", "field": "data.date", "offset": 2},
+                                    "y": {"scale": "y", "field": "data.submetric"},
+                                    "fill": {"scale": "color", "field": "data.project"},
+                                    "text": {"field": "data.project"}
                                 }
                             }
                         }
