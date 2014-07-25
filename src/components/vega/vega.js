@@ -1,4 +1,4 @@
-define(['knockout', 'd3', 'text!./vega.html', 'zepto'], function(ko, d3, templateMarkup) {
+define(['knockout', 'text!./vega.html', 'zepto'], function(ko, templateMarkup) {
 
     function Vega(params) {
         // copies all the params to self
@@ -68,64 +68,6 @@ define(['knockout', 'd3', 'text!./vega.html', 'zepto'], function(ko, d3, templat
             };
         };
 
-        self.definition = ko.computed(function(){
-            var datasets = this.datasets();
-            return {
-                "width": 500,
-                "height": 200,
-                "data": [
-                    {
-                        "name": "projects",
-                        "format": {"parse": {"date":"date"}},
-                        "values": d3.merge(datasets)
-                    }
-                ],
-                "scales": [
-                    {
-                        "name": "x",
-                        "type": "time",
-                        "range": "width",
-                        "domain": {"data": "projects", "field": "data.date"}
-                    },
-                    {
-                        "name": "y",
-                        "type": "linear",
-                        "range": "height",
-                        "nice": true,
-                        "domain": {"data": "projects", "field": "data.submetric"}
-                    },
-                    {
-                        "name": "color", "type": "ordinal", "range": "category10"
-                    }
-                ],
-                "axes": [
-                    {"type": "x", "scale": "x", "tickSizeEnd": 0},
-                    {"type": "y", "scale": "y"}
-                ],
-                "marks": [
-                    {
-                        "type": "group",
-                        "from": {
-                            "data": "projects",
-                            "transform": [{"type": "facet", "keys": ["data.project"]}]
-                        },
-                        "marks": [
-                            {
-                                "type": "line",
-                                "properties": {
-                                    "enter": {
-                                        "x": {"scale": "x", "field": "data.date"},
-                                        "y": {"scale": "y", "field": "data.submetric"},
-                                        "stroke": {"scale": "color", "field": "data.project"},
-                                        "strokeWidth": {"value": 1}
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                ]
-            };
-        }, self);
     }
 
     return { viewModel: Vega, template: templateMarkup };

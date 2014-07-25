@@ -1,4 +1,4 @@
-define(['knockout', 'vega'], function(ko, vega) {
+define(['knockout', 'vega', 'd3'], function(ko, vega, d3) {
 /**
  * Custom binding that is used to render a vega graph from an observable definition
  * `<div data-bind="vega: definition"></div>`
@@ -13,24 +13,79 @@ define(['knockout', 'vega'], function(ko, vega) {
             };
         },
         update: function(element, valueAccessor){
-            var unwrapped;
-            unwrapped = ko.utils.unwrapObservable(valueAccessor());
-            if (unwrapped !== null) {
-                vega.parse.spec(unwrapped, function(graph){
-                    var view = graph({el:element}).update();
-                    //if (typeof(element.view) === 'undefined'){
-                        //var view = graph({el:element}).update();
-                        //element.view = view;
-                    //} else {
-                        //var dataDict = {}, i, d = unwrapped.data;
-                        //for (i=0; i<d.length; i++){
-                            //dataDict[d[i].name] = d[i].values;
-                        //}
-                        //element.view.data(dataDict).update({duration:500});
-                        //console.log(dataDict);
-                    //}
-                });
+            var datasets;
+            datasets = ko.utils.unwrapObservable(valueAccessor());
+            if (datasets !== null) {
+                if(element.view && false /* updating data at runtime just won't work */){
+                    var parsed = vega.parse.data(vegaData(datasets)).load;
+                    element.view.data(parsed).update();
+                } else {
+                    vega.parse.spec(vegaDefinition(datasets), function(graph){
+                        element.view = graph({el:element}).update();
+                    });
+                }
             }
         }
     };
+
+    function vegaData(datasets){
+        return [
+            {
+                "name": "projects",
+                "format": {"parse": {"date":"date"}},
+                "values": d3.merge(datasets)
+            }
+        ];
+    }
+    function vegaDefinition(datasets){
+        return {
+            "width": 900,
+            "height": 400,
+            "data": vegaData(datasets),
+            "scales": [
+                {
+                    "name": "x",
+                    "type": "time",
+                    "range": "width",
+                    "domain": {"data": "projects", "field": "data.date"}
+                },
+                {
+                    "name": "y",
+                    "type": "linear",
+                    "range": "height",
+                    "nice": true,
+                    "domain": {"data": "projects", "field": "data.submetric"}
+                },
+                {
+                    "name": "color", "type": "ordinal", "range": "category10"
+                }
+            ],
+            "axes": [
+                {"type": "x", "scale": "x", "tickSizeEnd": 0},
+                {"type": "y", "scale": "y"}
+            ],
+            "marks": [
+                {
+                    "type": "group",
+                    "from": {
+                        "data": "projects",
+                        "transform": [{"type": "facet", "keys": ["data.project"]}]
+                    },
+                    "marks": [
+                        {
+                            "type": "line",
+                            "properties": {
+                                "enter": {
+                                    "x": {"scale": "x", "field": "data.date"},
+                                    "y": {"scale": "y", "field": "data.submetric"},
+                                    "stroke": {"scale": "color", "field": "data.project"},
+                                    "strokeWidth": {"value": 2}
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        };
+    }
 });
