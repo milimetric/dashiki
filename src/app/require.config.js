@@ -18,5 +18,7 @@ var require = {
     },
     shim: {
         "bootstrap": { deps: ["jquery"] }
-    }
+    },
+    // TODO: configure caching properly
+    urlArgs: "bust=" +  (new Date()).getTime()
 };
