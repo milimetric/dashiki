@@ -21,7 +21,7 @@ define(['knockout', 'text!./wikimetrics-dashboard.html', 'zepto'], function(ko, 
         }, self);
 
         function last(relativeUrl){
-            var simpleParse = /([a-zA-Z]+).*/;
+            var simpleParse = /([a-zA-Z_]+).*/;
             return simpleParse.exec(relativeUrl)[1];
         }
         function href(){
