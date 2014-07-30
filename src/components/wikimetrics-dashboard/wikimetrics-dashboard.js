@@ -36,7 +36,6 @@ define(['knockout', 'text!./wikimetrics-dashboard.html', 'zepto'], function(ko, 
                     projects: ko.observableArray([]),
                     selected: ko.observable(false)
                 };
-                self.projectsByMetric.push(metric);
                 $.get(params.baseURL + metricLink).done(function(projectsDir){
                     $(projectsDir).find('a').slice(5).map(href).each(function(){
                         var projectLink = this;
@@ -53,6 +52,7 @@ define(['knockout', 'text!./wikimetrics-dashboard.html', 'zepto'], function(ko, 
                             selected: ko.observable(false)
                         });
                     });
+                    self.projectsByMetric.push(metric);
                 });
             });
         });

@@ -1,8 +1,9 @@
 <div style="margin-bottom: 10px;">
     <select data-bind="options: projectsByMetric, optionsText: 'name', value: selectedMetric"></select>
+    <input type="text" class="search-query" placeholder="filter projects" data-bind="value: filterProjects, valueUpdate:'afterkeydown'">
 </div>
 <div>
-    <ul data-bind="foreach: metricProjects">
+    <ul data-bind="foreach: filteredProjects" style="height: 400px; overflow-y: scroll; overflow-x: hidden">
         <li>
             <label>
                 <input type="checkbox" data-bind="checked: selected"/>
