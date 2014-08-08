@@ -7,7 +7,21 @@ define(['knockout', 'vega', 'd3'], function(ko, vega, d3) {
  *     that evaluates to a Vega JS graph definition
  */
     ko.bindingHandlers.vega = {
-        init: function(){
+        init: function(element){
+            $(window).resize(function(){
+                if (element.view){
+                    var defs = element.view.defs();
+                    var h = defs.height,
+                        w = defs.width,
+                        hPad = defs.padding.top + defs.padding.bottom,
+                        wPad = defs.padding.left + defs.padding.right;
+
+                    var parent = $(element).parents('.vega-container');
+                    h = parent.innerHeight() - hPad;
+                    w = parent.innerWidth() - wPad;
+                    element.view.height(h).width(w).update({duration: 300});
+                }
+            });
             return {
                 controlsDescendantBindings: false
             };
@@ -23,6 +37,7 @@ define(['knockout', 'vega', 'd3'], function(ko, vega, d3) {
                 } else {
                     vega.parse.spec(vegaDefinition(datasets), function(graph){
                         element.view = graph({el:element}).update();
+                        $(window).trigger('resize');
                     });
                 }
             }
