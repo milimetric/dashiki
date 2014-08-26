@@ -41,7 +41,9 @@ define(['knockout', 'text!./wikimetrics-dashboard.html', 'zepto'], function(ko, 
                         var projectLink = this;
                         var submetrics = {
                             NewlyRegistered: 'newly_registered',
-                            RollingActiveEditor: 'rolling_active_editor'
+                            RollingActiveEditor: 'rolling_active_editor',
+                            PagesCreated: 'pages_created',
+                            NamespaceEdits: 'edits'
                         };
                         metric.projects.push({
                             project: last(projectLink),

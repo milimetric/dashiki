@@ -78,8 +78,18 @@ define(['knockout', 'vega', 'd3'], function(ko, vega, d3) {
                 }
             ],
             "axes": [
-                {"type": "x", "scale": "x", "tickSizeEnd": 0},
-                {"type": "y", "scale": "y"}
+                {"type": "x", "scale": "x", "tickSizeEnd": 0, "grid": true, "properties": {
+                    "ticks": { "stroke": { "value": "#666666" } },
+                    "labels": { "fill": { "value": "#666666" } },
+                    "grid": { "stroke": { "value": "#cacaca" } },
+                    "axis": { "stroke": { "value": "#666666" }, "strokeWidth": { "value": 2 } }
+                }},
+                {"type": "y", "scale": "y", "grid": true, "properties": {
+                    "ticks": { "stroke": { "value": "#666666" } },
+                    "labels": { "fill": { "value": "#666666" } },
+                    "grid": { "stroke": { "value": "#cacaca" } },
+                    "axis": { "stroke": { "value": "#666666" }, "strokeWidth": { "value": 2 } }
+                }}
             ],
             "marks": [
                 {
